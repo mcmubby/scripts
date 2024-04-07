@@ -44,10 +44,10 @@ def createJira():
              "version": 1
         },
         "project": {
-           "key": "AB"
+           "key": "GI"
         },
         "issuetype": {
-            "id": "10006"
+            "id": "10009"
         },
         "summary": "Main order flow broken",
     },
