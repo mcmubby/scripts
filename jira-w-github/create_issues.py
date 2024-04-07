@@ -3,6 +3,9 @@ from requests.auth import HTTPBasicAuth
 from dotenv import load_dotenv
 import json
 import os
+from flask import Flask
+
+app = Flask(__name__)
 
 load_dotenv()
 
@@ -10,19 +13,57 @@ jira_domain = os.getenv('jira_domain')
 api_token = os.getenv('jira_github_token')
 email = os.getenv('jira_email')
 
-url = f"https://{jira_domain}/rest/api/3/project/search"
+# Define a route that handles GET requests
+@app.route('/createJira', methods=['POST'])
+def createJira():
 
-auth = HTTPBasicAuth(email, api_token)
+    url = f"https://{jira_domain}/rest/api/3/issue"
 
-headers = {
-  "Accept": "application/json"
-}
+    auth = HTTPBasicAuth(email, api_token)
 
-response = requests.request(
-   "GET",
-   url,
-   headers=headers,
-   auth=auth
-)
+    headers = {
+        "Accept": "application/json",
+        "Content-Type": "application/json"
+    }
 
-print(json.dumps(json.loads(response.text), sort_keys=True, indent=4, separators=(",", ": ")))
+    payload = json.dumps( {
+        "fields": {
+        "description": {
+            "content": [
+                {
+                    "content": [
+                        {
+                            "text": "Order entry fails when selecting supplier.",
+                            "type": "text"
+                        }
+                    ],
+                    "type": "paragraph"
+                    }
+                ],
+            "type": "doc",
+             "version": 1
+        },
+        "project": {
+           "key": "AB"
+        },
+        "issuetype": {
+            "id": "10006"
+        },
+        "summary": "Main order flow broken",
+    },
+    "update": {}
+    } )
+
+
+    response = requests.request(
+        "POST",
+        url,
+        data=payload,
+        headers=headers,
+        auth=auth
+    )
+
+    return json.dumps(json.loads(response.text), sort_keys=True, indent=4, separators=(",", ": "))
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000)
