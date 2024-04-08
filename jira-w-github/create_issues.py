@@ -1,4 +1,3 @@
-import requests
 import json
 from flask import Flask, request
 from request_helper import RequestHelper
@@ -7,6 +6,7 @@ app = Flask(__name__)
 
 project_key = 'GI'
 trigger_comment = '/jira'
+issue_type = '10009'
 
 
 @app.route('/createJira', methods=['POST'])
@@ -42,7 +42,7 @@ def createJira():
                    "key": project_key
                 },
                 "issuetype": {
-                    "id": "10009"
+                    "id": issue_type
                 },
                 "summary": data['issue']['title'],
             },
