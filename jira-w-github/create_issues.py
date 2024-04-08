@@ -1,17 +1,10 @@
 import requests
-from requests.auth import HTTPBasicAuth
-from dotenv import load_dotenv
 import json
-import os
 from flask import Flask, request
+from request_helper import RequestHelper
 
 app = Flask(__name__)
 
-load_dotenv()
-
-jira_domain = os.getenv('jira_domain')
-api_token = os.getenv('jira_github_token')
-email = os.getenv('jira_email')
 project_key = 'GI'
 trigger_comment = '/jira'
 
@@ -24,16 +17,8 @@ def createJira():
         data = request.get_json()
 
         if((data['comment']['body']).lower() == trigger_comment):
-            ## Auth data
-            url = f"https://{jira_domain}/rest/api/3/issue"
-
-            auth = HTTPBasicAuth(email, api_token)
-
-            headers = {
-                "Accept": "application/json",
-                "Content-Type": "application/json"
-            }
-
+            
+            rh = RequestHelper()
 
             ## Jira Ticket Payload
             payload = json.dumps( {
@@ -65,15 +50,7 @@ def createJira():
             } )
 
 
-            response = requests.request(
-                "POST",
-                url,
-                data=payload,
-                headers=headers,
-                auth=auth
-            )
-
-            return json.dumps(json.loads(response.text), sort_keys=True, indent=4, separators=(",", ": "))
+            return rh.post_request('/rest/api/3/issue', payload)
         
         else:
             return 'No action', 200
