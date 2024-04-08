@@ -33,5 +33,11 @@ def create_issue(data, project_key, issue_type):
     },
     "update": {}
     } )
-    
+
     return rh.post_request('/rest/api/3/issue', payload)
+
+
+def get_issue_type_meta(projectIdOrKey):
+    rh = RequestHelper()
+    endpoint = f'/rest/api/3/issue/createmeta/{projectIdOrKey}/issuetypes'
+    return rh.get_request(endpoint)
